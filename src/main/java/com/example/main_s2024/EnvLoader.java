@@ -9,6 +9,4 @@ public class EnvLoader {
         dotenv = Dotenv.configure().directory("src/main/java/com/example/main_s2024/.env")
                 .ignoreIfMalformed().ignoreIfMissing().load();
     }
-
-
 }

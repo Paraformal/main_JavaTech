@@ -9,4 +9,6 @@ module com.example.main_s2024 {
 
     opens com.example.main_s2024 to javafx.fxml;
     exports com.example.main_s2024;
+    exports com.example.main_s2024.DbHandler;
+    opens com.example.main_s2024.DbHandler to javafx.fxml;
 }
