@@ -1,0 +1,32 @@
+.root {
+    -fx-background-color: #333333;
+    -fx-font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+}
+
+#logoImage {
+    /* Add your logo image path here */
+    -fx-image: url('../image_ressources/main_image.png');
+}
+
+#progressBar {
+    -fx-pref-width: 300px;
+    -fx-pref-height: 30px;
+}
+
+#statusLabel, #versionLabel {
+    -fx-text-fill: #AAAAAA;
+    -fx-font-size: 12px;
+}
+
+/* Customize the progress bar look */
+.progress-bar {
+    -fx-background-color: #666666;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background-radius: 5, 5, 4;
+}
+
+.progress-bar .bar {
+    -fx-background-color: #00ffae;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4;
+}

@@ -1,5 +1,6 @@
 package com.example.main_s2024;
 
+import com.example.main_s2024.StageHandler.StageHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -18,7 +19,7 @@ public class LandingPage {
         landing_text_fld.setText("Welcome to the landing page!");
     }
 
-    public void onBackButtonClicked() {;
+    public void onBackButtonClicked() {
         Stage currentStage = (Stage) landing_text_fld.getScene().getWindow();
         stageHandler = new StageHandler(currentStage);
         stageHandler.switchScene("hello-view.fxml", "Hello!");

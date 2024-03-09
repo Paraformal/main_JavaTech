@@ -2,7 +2,7 @@ package com.example.main_s2024.DbHandler;
 
 import java.sql.*;
 
-import com.example.main_s2024.EnvLoader;
+import com.example.main_s2024.Utils.EnvLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

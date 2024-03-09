@@ -1,4 +1,4 @@
-package com.example.main_s2024;
+package com.example.main_s2024.Utils;
 
 import io.github.cdimascio.dotenv.Dotenv;
 

@@ -1,0 +1,197 @@
+  try {
+//            String osName = System.getProperty("os.name").toLowerCase();
+//            String command;
+//
+//            if (osName.contains("win")) {
+//                command = "wmic cpu get /format:list";
+//            } else if (osName.contains("nix") || osName.contains("nux") || osName.contains("mac")) {
+//                command = "lscpu";
+//            } else {
+//                System.out.println("Unsupported operating system");
+//                return;
+//            }
+//
+//            Process process = Runtime.getRuntime().exec(command);
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//
+//            String line;
+//            while ((line = reader.readLine()) != null) {
+//                System.out.println(line);
+//            }
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+
+//        try {
+//            String osName = System.getProperty("os.name").toLowerCase();
+//            String command;
+//
+//            if (osName.contains("win")) {
+//                command = "wmic cpu get /format:list";
+//            } else {
+//                System.out.println("Unsupported operating system");
+//                return;
+//            }
+//
+//            Process process = Runtime.getRuntime().exec(command);
+//            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+//
+//            String line;
+//            String name = "";
+//            String currentClockSpeed = "";
+//            String maxClockSpeed = "";
+//            String numberOfCores = "";
+//            String numberOfLogicalProcessors = "";
+//            String l2CacheSize = "";
+//            String l3CacheSize = "";
+//            String description = "";
+//            String processorId = "";
+//
+//            while ((line = reader.readLine()) != null) {
+//                line = line.trim();
+//                if (!line.isEmpty()) {
+//                    String[] keyValue = line.split("=");
+//                    switch (keyValue[0]) {
+//                        case "Name":
+//                            name = keyValue[1];
+//                            break;
+//                        case "CurrentClockSpeed":
+//                            currentClockSpeed = keyValue[1];
+//                            break;
+//                        case "MaxClockSpeed":
+//                            maxClockSpeed = keyValue[1];
+//                            break;
+//                        case "NumberOfCores":
+//                            numberOfCores = keyValue[1];
+//                            break;
+//                        case "NumberOfLogicalProcessors":
+//                            numberOfLogicalProcessors = keyValue[1];
+//                            break;
+//                        case "L2CacheSize":
+//                            l2CacheSize = keyValue[1];
+//                            break;
+//                        case "L3CacheSize":
+//                            l3CacheSize = keyValue[1];
+//                            break;
+//                        case "Description":
+//                            description = keyValue[1];
+//                            break;
+//                        case "ProcessorId":
+//                            processorId = keyValue[1];
+//                            break;
+//                    }
+//                }
+//            }
+//
+//            String[] descriptionParts = description.split("\\s+");
+//            String family = descriptionParts[2];
+//            String model = descriptionParts[4];
+//            String stepping = descriptionParts[6];
+//
+//            // Hardcoded or inferred values
+//
+//
+//            // Print the values
+//            System.out.println("Processor: " + name);
+//            System.out.println("Core Speed: " + currentClockSpeed + " MHz");
+//            System.out.println("Max Speed: " + maxClockSpeed + " MHz");
+//            System.out.println("Cores: " + numberOfCores);
+//            System.out.println("Threads: " + numberOfLogicalProcessors);
+//            System.out.println("L2 Cache Size: " + l2CacheSize + " KB");
+//            System.out.println("L3 Cache Size: " + l3CacheSize + " KB");
+//            System.out.println("Family: " + family);
+//            System.out.println("Model: " + model);
+//            System.out.println("Stepping: " + stepping);
+//
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+//        SystemInfo si = new SystemInfo();
+//        HardwareAbstractionLayer hal = si.getHardware();
+//        CentralProcessor processor = hal.getProcessor();
+//        ProcessorIdentifier processorIdentifier = processor.getProcessorIdentifier();
+//
+//        // Extracting available information using OSHI
+//        String processorName = processorIdentifier.getName();
+//        String processorFamily = String.valueOf(processorIdentifier.getFamily());
+//        String processorModel = String.valueOf(processorIdentifier.getModel()); // Convert to Hexadecimal string as typically represented
+//        String processorStepping = String.valueOf(processorIdentifier.getStepping());
+//
+//        // Printing the extracted details
+//        System.out.println("Processor Name: " + processorName);
+//        System.out.println("Processor Family: " + processorFamily);
+//        System.out.println("Processor Model: " + processorModel);
+//        System.out.println("Processor Stepping: " + processorStepping);
+
+//        String urlString = "https://www.gadgets360.com/compare-dell-vostro-15-3000-vs-lenovo-thinkpad\\n";
+//        requestHandler requestHandler = new requestHandler(urlString);
+//        System.out.println(requestHandler.getRequest());
+
+
+package com.example.main_s2024.DataPack;
+
+import com.sun.jna.Native;
+import com.sun.jna.Structure;
+import com.sun.jna.win32.StdCallLibrary;
+
+
+public class BatteryStats {
+
+    private static BatteryStats ourInstance = new BatteryStats();
+
+    private BatteryStats() {
+    }
+
+    public static BatteryStats getInstance() {
+        return ourInstance;
+    }
+
+    public String[] getBatteryStats() {
+        SYSTEM_POWER_STATUS batteryStatus = new SYSTEM_POWER_STATUS();
+        Kernel32.INSTANCE.GetSystemPowerStatus(batteryStatus);
+
+        String[] stats = new String[]{
+                "AC Line Status: " + batteryStatus.ACLineStatus,
+                "Battery Flag: " + batteryStatus.BatteryFlag,
+                "Battery Life Percent: " + batteryStatus.BatteryLifePercent,
+                "System Status Flag: " + batteryStatus.SystemStatusFlag,
+                "Battery Life Time: " + batteryStatus.BatteryLifeTime,
+                "Battery Full Life Time: " + batteryStatus.BatteryFullLifeTime
+        };
+
+        // Assuming setBatteryInModel(String[]) method exists to handle the stats
+        setBatteryInModel(stats);
+        return stats;
+    }
+
+    private void setBatteryInModel(String[] battery) {
+        if (!battery[1].replaceAll("[^0-9]", "").equals("")) {
+            DynamicGeneralStats.getInstance().setBatteryPerc(battery[1].replaceAll("[^0-9]", ""));
+
+        } else {
+            DynamicGeneralStats.getInstance().setBatteryPerc("-1");
+            DynamicGeneralStats.getInstance().setBattery(battery);
+        }
+
+    }
+
+
+    public interface Kernel32 extends StdCallLibrary {
+        Kernel32 INSTANCE = Native.load("kernel32", Kernel32.class);
+
+        boolean GetSystemPowerStatus(SYSTEM_POWER_STATUS result);
+    }
+
+    @Structure.FieldOrder({"ACLineStatus", "BatteryFlag", "BatteryLifePercent", "SystemStatusFlag", "BatteryLifeTime", "BatteryFullLifeTime"})
+    public static class SYSTEM_POWER_STATUS extends Structure {
+        public byte ACLineStatus;
+        public byte BatteryFlag;
+        public byte BatteryLifePercent;
+        public byte SystemStatusFlag;
+        public int BatteryLifeTime;
+        public int BatteryFullLifeTime;
+    }
+}

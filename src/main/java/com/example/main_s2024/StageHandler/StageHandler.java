@@ -1,4 +1,4 @@
-package com.example.main_s2024;
+package com.example.main_s2024.StageHandler;
 
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
