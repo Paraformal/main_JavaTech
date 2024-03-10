@@ -61,9 +61,7 @@ public class BatteryStats {
                 return fields;
             }
 
-            /**
-             * The AC power status
-             */
+
             public String getACLineStatusString() {
                 switch (ACLineStatus) {
                     case (0):
@@ -75,9 +73,7 @@ public class BatteryStats {
                 }
             }
 
-            /**
-             * The battery charge status
-             */
+
             public String getBatteryFlagString() {
                 switch (BatteryFlag) {
                     case (1):
