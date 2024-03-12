@@ -94,8 +94,13 @@ public class HelloController extends Application {
     }
 
     private void fetchDataAndUpdateUI(Controller controller) {
-        DataBegin data = DataBeginController.getInstance().getData();
-        Platform.runLater(() -> controller.updateUI(data));
+        try {
+            DataBegin data = DataBeginController.getInstance().getData();
+            Platform.runLater(() -> controller.updateUI(data));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private void setupPeriodicDataFetch(Controller controller) {

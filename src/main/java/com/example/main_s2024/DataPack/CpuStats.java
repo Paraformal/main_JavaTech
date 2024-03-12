@@ -49,6 +49,7 @@ public class CpuStats {
 
     private void setCpuLoadInModel(Float cpuLoad){
         DynamicGeneralStats.getInstance().setCpuLoad(cpuLoad);
+        System.out.println("Iam fucked" + DynamicGeneralStats.getInstance().getCpuLoad());
     }
 
     private void setPercPerThreadInModel(String percPerThread){

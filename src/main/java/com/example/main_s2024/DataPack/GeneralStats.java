@@ -31,9 +31,9 @@ public class GeneralStats {
         return stringBuilder.toString();
     }
 
-//    private void setCpuInfoInModel(String[] cpuInfo){
-//        SingletonStaticGeneralStats.getInstance().setCpuInfo(cpuInfo);
-//    }
+    private void setCpuInfoInModel(String[] cpuInfo){
+        StaticGeneralStats.getInstance().setCpuInfo(cpuInfo);
+    }
 
     public String[] getCpuDetails() {
         String[] cpuDetails = new String[6];
@@ -44,7 +44,7 @@ public class GeneralStats {
         cpuDetails[3] = "Physical CPU(s): " + systemInfo.getHardware().getProcessor().getPhysicalProcessorCount();
         cpuDetails[4] = "Logical CPU(s): " + systemInfo.getHardware().getProcessor().getLogicalProcessorCount();
 
-//        setCpuInfoInModel(cpuInfo);
+         setCpuInfoInModel(cpuDetails);
         return cpuDetails;
     }
 

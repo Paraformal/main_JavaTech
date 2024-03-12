@@ -1,6 +1,7 @@
 package com.example.main_s2024.DataController;
 
 import com.example.main_s2024.DataPack.*;
+import org.hyperic.sigar.Cpu;
 
 
 import java.util.Arrays;
@@ -8,6 +9,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class DataBeginController {
     private static DataBeginController instance = new DataBeginController();
@@ -24,19 +27,20 @@ public class DataBeginController {
         return instance;
     }
 
-    public DataBegin getData() {
-        final CountDownLatch latch = new CountDownLatch(2);
+    public DataBegin getData() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(3);
 
-        final String[] numericPercPerThread = new String[1];
-        String[][] cpuInfo = {null};
+        String[][] cpuInfo = new String[1][6];
+        System.out.println("CPU INFO: " + GeneralStats.getInstance().getCpuDetails());
         getCpuInfo.execute(() -> {
-            cpuInfo[0] = sSgs.getCpuInfo();
             try {
-                cpuInfo[0][5] = "CPU load: " + CpuStats.getInstance().getCpuLoad() + "%";
+                cpuInfo[0] = GeneralStats.getInstance().getCpuDetails();
+                if (cpuInfo[0] != null) {
+                    cpuInfo[0][5] = "CPU load: " + CpuStats.getInstance().getCpuLoad() + "%";
+                }
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            numericPercPerThread[0] = CpuStats.getInstance().getPercPerThreadStats();
             latch.countDown();
         });
 
@@ -47,6 +51,15 @@ public class DataBeginController {
         });
 
         String[] batteryParts = BatteryStats.getInstance().getBatteryStats();
+        latch.countDown();
+
+        StringBuilder miscellaneousString = new StringBuilder();
+        miscellaneousString.append(CpuStats.getInstance().getCpuLoad()).append("\n");
+        miscellaneousString.append(MemoryStats.getInstance().getRamMemory()).append("\n");
+        miscellaneousString.append(batteryParts[1]).append("\n");
+        miscellaneousString.append(NetworkStats.getInstance().getNetworkSpeed());
+
+        System.out.println("TESTI: " + miscellaneousString.toString());
 
         try {
             latch.await();
@@ -55,23 +68,43 @@ public class DataBeginController {
         }
 
         String ramMemory = MemoryStats.getInstance().getRamMemory() + "\n";
-        String sb = cpuInfo[0][5] + "\n" + ramMemory + batteryParts[1] + "\n" + networkSpeed[0];
+        String sb = (cpuInfo[0] != null && cpuInfo[0][5] != null ? cpuInfo[0][5] : "") + "\n" + ramMemory + (batteryParts != null && batteryParts.length > 1 ? batteryParts[1] : "") + "\n" + (networkSpeed[0] != null ? networkSpeed[0] : "");
         String[] miscellaneous = sb.split("\n");
 
-        return new DataBegin(counter.incrementAndGet(),
+        System.out.println("I AM NOT HERE:" + MemoryStats.getInstance().getFileSystems());
+
+        String input = MemoryStats.getInstance().getFileSystems();
+
+        Pattern pattern = Pattern.compile("(\\d+(\\.\\d+)?)");
+        Matcher matcher = pattern.matcher(input);
+
+        float space = 0f;
+        if (matcher.find()) {
+            try {
+                space = Float.parseFloat(matcher.group(1));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+        }
+
+
+        System.out.println("PERC THREAD: " + CpuStats.getInstance().getPercPerThreadStats());
+
+        return new DataBegin(
+                counter.incrementAndGet(),
                 Arrays.toString(batteryParts),
                 batteryParts,
                 cpuInfo[0],
                 MemoryStats.getInstance().getFileSystems(),
-                sSgs.getSystemInformation(),
-                String.join("\n", miscellaneous),
-                sDgs.getAvaibleFileSystem(),
-                sDgs.getCpuLoad().toString(),
-                sDgs.getFreeRam(),
-                numericPercPerThread[0],
+                GeneralStats.getInstance().getComputerSystemInfo(),
+                miscellaneousString.toString(),
+                space,
+                CpuStats.getInstance().getCpuLoad().toString(),
+                MemoryStats.getInstance().getRamMemory(),
+                sDgs.getPercPerThread().toString(),
                 sDgs.getBatteryPerc().toString()
         );
+
     }
 
-    // Include other necessary methods...
 }

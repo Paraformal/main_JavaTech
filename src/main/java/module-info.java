@@ -19,4 +19,5 @@ module com.example.main_s2024 {
     opens com.example.main_s2024.StageHandler to javafx.fxml;
     exports com.example.main_s2024.Utils;
     opens com.example.main_s2024.Utils to javafx.fxml;
+    exports com.example.main_s2024.DataPack to com.sun.jna;
 }

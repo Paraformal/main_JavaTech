@@ -9,14 +9,14 @@ public class DataBegin {
     private final String disks;
     private final String computerInfo;
     private final String miscellaneous;
-    private final Float[] numericAvaibleFileSystem;
+    private final Float numericAvaibleFileSystem;
     private final String numericCpuLoad;
     private final String numericFreeRam;
     private final String numericPercPerThread;
     private final String numericBatteryPerc;
 
     public DataBegin(long id, String content, String[] batteryInfo, String[] cpuInfo, String disks,
-                     String computerInfo, String miscellaneuos, Float[] numericAvaibleFileSystem, String numericCpuLoad,
+                     String computerInfo, String miscellaneuos, Float numericAvaibleFileSystem, String numericCpuLoad,
                      String numericFreeRam, String numericPercPerThread, String numericBatteryPerc) {
         this.id = id;
         this.content = content;
@@ -45,7 +45,7 @@ public class DataBegin {
         return numericFreeRam;
     }
 
-    public Float[] getNumericAvaibleFileSystem() {
+    public Float getNumericAvaibleFileSystem() {
         return numericAvaibleFileSystem;
     }
 

@@ -13,9 +13,11 @@ public class DynamicGeneralStats {
     private DynamicGeneralStats() {
     }
 
-    public static DynamicGeneralStats getInstance() {
-        return myInstance;
-    }
+    public static synchronized DynamicGeneralStats getInstance() {
+        if (myInstance == null) {
+            myInstance = new DynamicGeneralStats();
+        }
+        return myInstance;    }
 
     public Float getCpuLoad() {
         return cpuLoad;
