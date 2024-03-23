@@ -8,6 +8,7 @@ public class MemoryStats {
     private static MemoryStats ourInstance = new MemoryStats();
 
     private SystemInfo systemInfo = new SystemInfo();
+    private String[] numericSpace;
 
     private MemoryStats() {
     }
@@ -33,7 +34,7 @@ public class MemoryStats {
 
     public String getFileSystems() {
         OSFileStore[] fsArray = systemInfo.getOperatingSystem().getFileSystem().getFileStores().toArray(new OSFileStore[0]);
-        String[] numericSpace = new String[fsArray.length];
+        numericSpace = new String[fsArray.length];
         String[] volume = new String[fsArray.length];
         String[] stringBuilder = new String[fsArray.length];
         for (int i = 0; i < fsArray.length; i++) {
@@ -80,4 +81,12 @@ public class MemoryStats {
         }
         DynamicGeneralStats.getInstance().setAvaibleFileSystem(floats);
     }
+
+//    public Float[] getAvaibleFileSystem() {
+//        Float[] floats = new Float[numericSpace.length];
+//        for (int i = 0; i < numericSpace.length; i++) {
+//            floats[i] = Float.valueOf(numericSpace[i]);
+//        }
+//        return floats;
+//    }
 }

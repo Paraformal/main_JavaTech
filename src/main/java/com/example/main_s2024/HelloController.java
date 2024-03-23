@@ -105,7 +105,8 @@ public class HelloController extends Application {
 
     private void setupPeriodicDataFetch(Controller controller) {
         scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
-        scheduledExecutorService.scheduleAtFixedRate(() -> fetchDataAndUpdateUI(controller), 0, 5, TimeUnit.SECONDS);
+        scheduledExecutorService.scheduleAtFixedRate(() -> fetchDataAndUpdateUI(controller), 0, 5,
+                TimeUnit.SECONDS);
     }
 
     private void setTitleWithIpAddress() {

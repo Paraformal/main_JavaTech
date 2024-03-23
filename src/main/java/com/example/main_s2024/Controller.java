@@ -1,6 +1,7 @@
 package com.example.main_s2024;
 
 import com.example.main_s2024.DataController.DataBegin;
+import com.example.main_s2024.DataPack.MemoryStats;
 import com.example.main_s2024.Graphs.LineGraphs;
 import com.example.main_s2024.Graphs.MultiLineGraphs;
 import com.example.main_s2024.Graphs.PieGraphs;
@@ -8,18 +9,18 @@ import com.example.main_s2024.Graphs.StackedAreaGraphs;
 import com.example.main_s2024.ViewsPack.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.StackedAreaChart;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 
-import java.util.Arrays;
-import java.util.List;
 
 public class Controller {
 
@@ -117,20 +118,16 @@ public class Controller {
 
     public void updateUI(DataBegin data) {
         Platform.runLater(() -> {
-            // Update Labels Directly from DataBegin
             systemLoadText.setText("System Load: " + data.getMiscellaneous());
             cpuText.setText("CPU Load: " + data.getNumericCpuLoad() + "%");
             batteryText.setText("Battery: " + data.getNumericBatteryPerc() + "%");
             disksText.setText("Disks: " + data.getDisks());
             systemInfoText.setText("Info: " + data.getComputerInfo());
-            // Assuming you want to display miscellaneous data somewhere
-            // For example, in a label not shown in your initial Controller code
-            // miscText.setText("Misc: " + data.getMiscellaneous());
 
-            // Update Line Chart for CPU Load
             updateLineChartForCPULoad(data.getNumericCpuLoad());
-            updateBatteryChart(data.getNumericBatteryPerc());;
+            updateBatteryChart(data.getNumericBatteryPerc());
             updateCpuChart(data.getNumericPercPerThread());
+            updateDiskChart(data.getDisks());
 
         });
     }
@@ -138,7 +135,7 @@ public class Controller {
     private void updateLineChartForCPULoad(String cpuLoad) {
         try {
             float load = Float.parseFloat(cpuLoad);
-            lineChartClass.addEntryLineChart(load); // Add load to the line chart using the LineGraphs class
+            lineChartClass.addEntryLineChart(load);
         } catch (NumberFormatException e) {
             System.err.println("Error parsing CPU load: " + cpuLoad);
         }
@@ -155,8 +152,8 @@ public class Controller {
 
     private void updateCpuChart(String cpuInfo) {
         try {
-            String[] cpuInfoParts = cpuInfo.split(","); // Split the comma-separated values into an array
-            Float[] load = new Float[cpuInfoParts.length]; // Initialize the Float array
+            String[] cpuInfoParts = cpuInfo.split(",");
+            Float[] load = new Float[cpuInfoParts.length];
             for (int i = 0; i < cpuInfoParts.length; i++) {
                 load[i] = Float.parseFloat(cpuInfoParts[i].trim()); // Parse and trim each String to a Float
             }
@@ -166,8 +163,58 @@ public class Controller {
         }
     }
 
+    private void updateDiskChart(String diskInfo) {
+        // Split the diskInfo string to extract relevant data
+        String[] parts = diskInfo.split(" ");
 
+        // Ensure the parts array contains enough elements and handle potential errors
+        if (parts.length >= 13) {
+            try {
+                // Look for the numerical values assuming reliable format:
+                float freeSpaceGiB = findFloat(parts, 7);
+                float totalSpaceGiB = findFloat(parts, 11);
 
+                // Calculate the percentage of free space
+                float freeSpacePercentage = (freeSpaceGiB / totalSpaceGiB) * 100f;
+
+                // Create a new PieChart
+                PieChart pieChart = new PieChart();
+
+                // Create a new PieGraphs instance with the provided PieChart
+                PieGraphs pieGraphs = new PieGraphs(pieChart);
+
+                // Call the addEntryPieGraphs method of PieGraphs with the freeSpacePercentage
+                pieGraphs.addEntryPieGraphs(new Float[]{freeSpacePercentage});
+
+                // Display the PieChart
+                Scene scene = new Scene(new Group(pieChart));
+                Stage stage = new Stage();
+                stage.setTitle("Disk Space Usage");
+                stage.setWidth(400);
+                stage.setHeight(300);
+                stage.setScene(scene);
+                stage.show();
+
+            } catch (NumberFormatException e) {
+                System.err.println("Error parsing disk space information: " + e.getMessage());
+                System.err.println("Original diskInfo: " + diskInfo);
+                e.printStackTrace();
+            }
+        } else {
+            System.err.println("Invalid diskInfo format. Expected at least 13 elements, got: " + parts.length);
+        }
+    }
+
+    private float findFloat(String[] parts, int startIndex) throws NumberFormatException {
+        for (int i = startIndex; i < parts.length; i++) {
+            try {
+                return Float.parseFloat(parts[i]);
+            } catch (NumberFormatException e) {
+                // Ignore and try the next part
+            }
+        }
+        throw new NumberFormatException("Float value not found in diskInfo");
+    }
 
 
 }
