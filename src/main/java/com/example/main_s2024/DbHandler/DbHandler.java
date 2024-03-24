@@ -12,36 +12,24 @@ public class DbHandler {
     private static final String dbUsername = EnvLoader.dotenv.get("DB_USERNAME");
     private static final String dbPassword = EnvLoader.dotenv.get("DB_PASSWORD");
 
-    static {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            logger.info("Driver loaded");
-        } catch (ClassNotFoundException e) {
-            logger.error("Driver not found", e);
-            System.exit(-1);
-        }
-    }
-
     private EnvLoader dotenv = new EnvLoader();
 
-    public static Connection openConnection() {
-        Connection connection = null;
+    public static Connection openConnection() throws SQLException {
         try {
-            connection = DriverManager.getConnection(connectionString, dbUsername, dbPassword);
-            logger.info("Database connection established");
+            DriverManager.getConnection(connectionString, dbUsername, dbPassword);
         } catch (SQLException e) {
-            logger.error("Could not establish database connection", e);
+            e.printStackTrace();
         }
-        return connection;
+
+        return DriverManager.getConnection(connectionString, dbUsername, dbPassword);
     }
 
     public static void closeConnection(Connection connection) {
         if (connection != null) {
             try {
                 connection.close();
-                logger.info("Connection closed");
             } catch (SQLException e) {
-                logger.error("Failed to close connection", e);
+                e.printStackTrace();
             }
         }
     }
@@ -51,5 +39,4 @@ public class DbHandler {
                 "Username: " + dbUsername + "\n" +
                 "Password: " + dbPassword;
     }
-
 }

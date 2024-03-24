@@ -70,7 +70,7 @@ public class GeneralStats {
         genericStringBuilder.append("     ").append("version: ").append(systemInfo.getHardware().getComputerSystem().
                 getBaseboard().getVersion()).append("\n");
 
-//        SingletonStaticGeneralStats.getInstance().setSystemInformation(genericStringBuilder.toString());
+        StaticGeneralStats.getInstance().setSystemInformation(genericStringBuilder.toString());
 
         return genericStringBuilder.toString();
     }

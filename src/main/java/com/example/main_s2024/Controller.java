@@ -6,6 +6,7 @@ import com.example.main_s2024.Graphs.LineGraphs;
 import com.example.main_s2024.Graphs.MultiLineGraphs;
 import com.example.main_s2024.Graphs.PieGraphs;
 import com.example.main_s2024.Graphs.StackedAreaGraphs;
+import com.example.main_s2024.Models.*;
 import com.example.main_s2024.ViewsPack.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -86,14 +87,13 @@ public class Controller {
         multiLineGraphs = new MultiLineGraphs(lineChartPercPerThread);
         stackedAreaChartClass = new StackedAreaGraphs(stackedAreaChartBattery);
 
-        //getting all view
         systemLoadBox = mainVbox.getChildren().get(0);
         batteryBox = mainVbox.getChildren().get(1);
         cpuBox = mainVbox.getChildren().get(2);
         disksBox = mainVbox.getChildren().get(3);
         systemInfoBox = mainVbox.getChildren().get(4);
         settingsBox = mainVbox.getChildren().get(5);
-        changeView(systemLoadBox); //set first view
+        changeView(systemLoadBox);
 
         new SystemLoadView(systemLoadText, lineChartClass);
         new BatteryView(batteryText, stackedAreaChartClass);
@@ -102,7 +102,6 @@ public class Controller {
         new SystemInfoView(systemInfoText);
         new SettingsView(qrImageView, bluetoothInformation, openLibs, settingVBox);
 
-        // button listener on bottom
         buttonSystemLoad.setOnAction(event -> changeView(systemLoadBox));
         buttonBattery.setOnAction(event -> changeView(batteryBox));
         buttonProcessor.setOnAction(event -> changeView(cpuBox));
@@ -123,6 +122,7 @@ public class Controller {
             batteryText.setText("Battery: " + data.getNumericBatteryPerc() + "%");
             disksText.setText("Disks: " + data.getDisks());
             systemInfoText.setText("Info: " + data.getComputerInfo());
+            System.out.println("BROZIII: " + data.getComputerInfo());
 
             updateLineChartForCPULoad(data.getNumericCpuLoad());
             updateBatteryChart(data.getNumericBatteryPerc());
@@ -155,7 +155,7 @@ public class Controller {
             String[] cpuInfoParts = cpuInfo.split(",");
             Float[] load = new Float[cpuInfoParts.length];
             for (int i = 0; i < cpuInfoParts.length; i++) {
-                load[i] = Float.parseFloat(cpuInfoParts[i].trim()); // Parse and trim each String to a Float
+                load[i] = Float.parseFloat(cpuInfoParts[i].trim());
             }
             multiLineGraphs.addEntryLineChart(load);
         } catch (NumberFormatException e) {
@@ -164,36 +164,18 @@ public class Controller {
     }
 
     private void updateDiskChart(String diskInfo) {
-        // Split the diskInfo string to extract relevant data
         String[] parts = diskInfo.split(" ");
 
-        // Ensure the parts array contains enough elements and handle potential errors
         if (parts.length >= 13) {
             try {
-                // Look for the numerical values assuming reliable format:
                 float freeSpaceGiB = findFloat(parts, 7);
                 float totalSpaceGiB = findFloat(parts, 11);
 
-                // Calculate the percentage of free space
                 float freeSpacePercentage = (freeSpaceGiB / totalSpaceGiB) * 100f;
+                PieGraphs pieGraphs = new PieGraphs(pieChartDisk);
 
-                // Create a new PieChart
-                PieChart pieChart = new PieChart();
-
-                // Create a new PieGraphs instance with the provided PieChart
-                PieGraphs pieGraphs = new PieGraphs(pieChart);
-
-                // Call the addEntryPieGraphs method of PieGraphs with the freeSpacePercentage
                 pieGraphs.addEntryPieGraphs(new Float[]{freeSpacePercentage});
 
-                // Display the PieChart
-                Scene scene = new Scene(new Group(pieChart));
-                Stage stage = new Stage();
-                stage.setTitle("Disk Space Usage");
-                stage.setWidth(400);
-                stage.setHeight(300);
-                stage.setScene(scene);
-                stage.show();
 
             } catch (NumberFormatException e) {
                 System.err.println("Error parsing disk space information: " + e.getMessage());
@@ -210,11 +192,65 @@ public class Controller {
             try {
                 return Float.parseFloat(parts[i]);
             } catch (NumberFormatException e) {
-                // Ignore and try the next part
             }
         }
         throw new NumberFormatException("Float value not found in diskInfo");
     }
 
+    private Report onExportToDbClicked(DataBegin dataBegin) {
+        String systemLoadData = dataBegin.getMiscellaneous();
+
+        float systemLoad = Float.parseFloat(systemLoadData.substring(systemLoadData.indexOf("System Load: ") + 13,
+                systemLoadData.indexOf("\n")));
+        String memoryLine = systemLoadData.substring(systemLoadData.indexOf("Memory: ") + 8,
+                systemLoadData.indexOf(" GiB free"));
+        float freeMemory = Float.parseFloat(memoryLine);
+        float totalMemory = Float.parseFloat(systemLoadData.substring(systemLoadData.indexOf("free of ") + 8,
+                systemLoadData.indexOf(" GiB\n")));
+        float memoryLoad = totalMemory - freeMemory;
+        int batteryPercentage = Integer.parseInt(systemLoadData.substring(systemLoadData.indexOf("Battery percentage: ")
+                + 20, systemLoadData.indexOf("%")));
+        float downloadSpeed = Float.parseFloat(systemLoadData.substring(systemLoadData.indexOf("download speed: ")
+                + 16, systemLoadData.indexOf(" KB/s", systemLoadData.indexOf("download speed:"))));
+        float uploadSpeed = Float.parseFloat(systemLoadData.substring(systemLoadData.indexOf("upload speed: ")
+                + 14, systemLoadData.lastIndexOf(" KB/s")));
+
+        SystemLoad systemLoadObject = new SystemLoad(systemLoad, memoryLoad, batteryPercentage, downloadSpeed, uploadSpeed);
+
+        String cpuData = dataBegin.getNumericCpuLoad();
+        CpuInfo cpuInfo = new CpuInfo("Intel", "i7", Float.parseFloat(cpuData));
+
+        String diskData = dataBegin.getDisks();
+        String diskModel = diskData.substring(0, diskData.indexOf(" ("));
+        String capacityString = diskData.substring(diskData.indexOf("free of ") + 8, diskData.indexOf(" GiB ("));
+        int diskMaxCapacity = (int) Math.round(Double.parseDouble(capacityString));
+        String freeSpaceString = diskData.substring(diskData.indexOf("[NTFS] ") + 7, diskData.indexOf(" GiB free"));
+        int diskCurrentFreeSpace = (int) Math.round(Double.parseDouble(freeSpaceString));
+
+        DiskInfo diskInfo = new DiskInfo(diskModel, diskMaxCapacity, diskCurrentFreeSpace);
+
+        String batteryData = dataBegin.getNumericBatteryPerc();
+        int batteryPercentage2 = Integer.parseInt(batteryData);
+        BatteryInfo batteryInfo = new BatteryInfo("Dell 0MGJN9", 65, batteryPercentage2);
+
+
+        String systemInfoData = dataBegin.getComputerInfo();
+        String windowsInfo = systemInfoData.substring(0, systemInfoData.indexOf("\n"));
+        String pcName = systemInfoData.substring(systemInfoData.indexOf("\n") + 1,
+                systemInfoData.indexOf("\n", systemInfoData.indexOf("\n") + 1));
+
+        String baseboardData = systemInfoData.substring(systemInfoData.indexOf("Baseboard:"));
+        String pcBoardManufacturer = baseboardData.substring(baseboardData.indexOf("manufacturer:") + 14,
+                baseboardData.indexOf("\n", baseboardData.indexOf("manufacturer:")));
+        String pcBoardModel = baseboardData.substring(baseboardData.indexOf("model:") + 7,
+                baseboardData.indexOf("\n", baseboardData.indexOf("model:")));
+        String pcBoardVersion = baseboardData.substring(baseboardData.indexOf("version:") + 9,
+                baseboardData.indexOf("\n", baseboardData.indexOf("version:")));
+
+        SystemInfo systemInfo = new SystemInfo(windowsInfo, pcName, pcBoardManufacturer, pcBoardVersion, pcBoardModel);
+
+        Report report = new Report(systemLoadObject, batteryInfo, cpuInfo, diskInfo, systemInfo);
+        return report;
+    }
 
 }

@@ -2,55 +2,23 @@ package com.example.main_s2024;
 
 import com.example.main_s2024.DataController.DataBegin;
 import com.example.main_s2024.DataController.DataBeginController;
-import com.example.main_s2024.DataPack.StaticGeneralStats;
-import com.example.main_s2024.DbHandler.DbHandler;
-
-import com.example.main_s2024.StageHandler.StageHandler;
-import com.example.main_s2024.Utils.requestHandler;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import oshi.SystemInfo;
-import oshi.hardware.CentralProcessor;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.hardware.CentralProcessor.ProcessorIdentifier;
-import oshi.SystemInfo;
-import org.hyperic.sigar.CpuPerc;
-import org.hyperic.sigar.SigarException;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.InetAddress;
-import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Observable;
-import java.util.Observer;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 
 public class HelloController extends Application {
-
-//    private DbHandler connection;
-//
-//    private StageHandler stageHandler;
-//    private StringBuilder genericStringBuilder = new StringBuilder();
-//    private CentralProcessor processor = new SystemInfo().getHardware().getProcessor();
-//
-//
-//    @FXML
-//    protected void onClick() {
-//    }
-
 
     public static HelloController serverBatteryMain;
     private Stage primaryStage;

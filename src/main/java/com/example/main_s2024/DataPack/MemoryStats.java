@@ -82,11 +82,4 @@ public class MemoryStats {
         DynamicGeneralStats.getInstance().setAvaibleFileSystem(floats);
     }
 
-//    public Float[] getAvaibleFileSystem() {
-//        Float[] floats = new Float[numericSpace.length];
-//        for (int i = 0; i < numericSpace.length; i++) {
-//            floats[i] = Float.valueOf(numericSpace[i]);
-//        }
-//        return floats;
-//    }
 }

@@ -68,7 +68,9 @@ public class DataBeginController {
         }
 
         String ramMemory = MemoryStats.getInstance().getRamMemory() + "\n";
-        String sb = (cpuInfo[0] != null && cpuInfo[0][5] != null ? cpuInfo[0][5] : "") + "\n" + ramMemory + (batteryParts != null && batteryParts.length > 1 ? batteryParts[1] : "") + "\n" + (networkSpeed[0] != null ? networkSpeed[0] : "");
+        String sb = (cpuInfo[0] != null && cpuInfo[0][5] != null ? cpuInfo[0][5] : "") + "\n" + ramMemory +
+                (batteryParts != null && batteryParts.length > 1 ? batteryParts[1] : "") + "\n" +
+                (networkSpeed[0] != null ? networkSpeed[0] : "");
         String[] miscellaneous = sb.split("\n");
 
         System.out.println("I AM NOT HERE:" + MemoryStats.getInstance().getFileSystems());
