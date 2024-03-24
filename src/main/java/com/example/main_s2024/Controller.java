@@ -7,9 +7,11 @@ import com.example.main_s2024.Graphs.MultiLineGraphs;
 import com.example.main_s2024.Graphs.PieGraphs;
 import com.example.main_s2024.Graphs.StackedAreaGraphs;
 import com.example.main_s2024.Models.*;
+import com.example.main_s2024.Services.add_to_db;
 import com.example.main_s2024.ViewsPack.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -18,8 +20,11 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.StackedAreaChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
+import javafx.scene.control.Slider;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 
@@ -60,6 +65,8 @@ public class Controller {
     @FXML
     private Button buttonSystemLoad;
     @FXML
+    private Button buttonSave;
+    @FXML
     private Label systemInfoText;
     @FXML
     private Label systemLoadText;
@@ -69,6 +76,8 @@ public class Controller {
     private Label batteryText;
     @FXML
     private Label disksText;
+    @FXML
+    private Slider opacitySlider;
 
     private Node systemLoadBox;
     private Node batteryBox;
@@ -79,6 +88,8 @@ public class Controller {
     private LineGraphs lineChartClass;
     private StackedAreaGraphs stackedAreaChartClass;
     private MultiLineGraphs multiLineGraphs;
+
+    private DataBegin tempDataBegin;
 
     @FXML
     private void initialize() {
@@ -108,7 +119,41 @@ public class Controller {
         buttonHdd.setOnAction(event -> changeView(disksBox));
         buttonSystemInfo.setOnAction(event -> changeView(systemInfoBox));
         buttonSettings.setOnAction(event -> changeView(settingsBox));
+        buttonSave.setOnAction(event -> {
+            Stage loadingStage = showLoadingPopup(); // Show loading popup
+
+            new Thread(() -> {
+                try {
+                    Report report = onExportToDbClicked(this.tempDataBegin);
+                    add_to_db add_to_db = new add_to_db(report);
+                    int systemLoadId = add_to_db.add_to_systemLoad();
+                    int batteryInfoId = add_to_db.add_to_batteryInfo();
+                    int cpuInfoId = add_to_db.add_to_cpuInfo();
+                    int diskInfoId = add_to_db.add_to_diskInfo();
+                    int sysetmInfoId = add_to_db.add_to_systemInfo();
+
+                    Report_db report_db = new Report_db(systemLoadId, batteryInfoId, cpuInfoId, diskInfoId, sysetmInfoId);
+                    add_to_db.add_report(report_db);
+
+                    Thread.sleep(2000);
+
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                } finally {
+
+                    Platform.runLater(loadingStage::close);
+                }
+            }).start();
+        });
+
     }
+
+    public void bindStageOpacity(Stage stage) {
+        if (opacitySlider != null) {
+            stage.opacityProperty().bind(opacitySlider.valueProperty());
+        }
+    }
+
 
     private void changeView(Node view) {
         mainVbox.getChildren().removeAll(systemInfoBox, batteryBox, cpuBox, disksBox, systemLoadBox, settingsBox);
@@ -117,6 +162,7 @@ public class Controller {
 
     public void updateUI(DataBegin data) {
         Platform.runLater(() -> {
+            this.tempDataBegin = data;
             systemLoadText.setText("System Load: " + data.getMiscellaneous());
             cpuText.setText("CPU Load: " + data.getNumericCpuLoad() + "%");
             batteryText.setText("Battery: " + data.getNumericBatteryPerc() + "%");
@@ -198,7 +244,7 @@ public class Controller {
     }
 
     private Report onExportToDbClicked(DataBegin dataBegin) {
-        String systemLoadData = dataBegin.getMiscellaneous();
+        String systemLoadData = "System Load: " + dataBegin.getMiscellaneous();
 
         float systemLoad = Float.parseFloat(systemLoadData.substring(systemLoadData.indexOf("System Load: ") + 13,
                 systemLoadData.indexOf("\n")));
@@ -212,8 +258,18 @@ public class Controller {
                 + 20, systemLoadData.indexOf("%")));
         float downloadSpeed = Float.parseFloat(systemLoadData.substring(systemLoadData.indexOf("download speed: ")
                 + 16, systemLoadData.indexOf(" KB/s", systemLoadData.indexOf("download speed:"))));
-        float uploadSpeed = Float.parseFloat(systemLoadData.substring(systemLoadData.indexOf("upload speed: ")
-                + 14, systemLoadData.lastIndexOf(" KB/s")));
+        String uploadSpeedStr = systemLoadData.substring(systemLoadData.indexOf("upload speed: ") + "upload speed: ".length(),
+                systemLoadData.indexOf(" KB/s", systemLoadData.indexOf("upload speed: ")));
+
+        uploadSpeedStr = uploadSpeedStr.replaceAll("[^\\d.]", "");
+
+        float uploadSpeed = 0;
+        try {
+            uploadSpeed = Float.parseFloat(uploadSpeedStr);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid number format for upload speed: " + uploadSpeedStr);
+        }
+
 
         SystemLoad systemLoadObject = new SystemLoad(systemLoad, memoryLoad, batteryPercentage, downloadSpeed, uploadSpeed);
 
@@ -251,6 +307,40 @@ public class Controller {
 
         Report report = new Report(systemLoadObject, batteryInfo, cpuInfo, diskInfo, systemInfo);
         return report;
+    }
+
+    private Stage showLoadingPopup() {
+        Stage loadingStage = new Stage();
+        loadingStage.initModality(Modality.APPLICATION_MODAL);
+        loadingStage.setTitle("Loading");
+
+        Label loadingLabel = new Label("Saving data, please wait...");
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.setPrefWidth(300);
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(loadingLabel, progressBar);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout, 300, 100);
+        scene.getStylesheets().add("/com/example/main_s2024/styles/loading-style.css");
+        loadingStage.setScene(scene);
+
+        loadingStage.show();
+
+        new Thread(() -> {
+            for (int i = 0; i <= 100; i++) {
+                int finalI = i;
+                Platform.runLater(() -> progressBar.setProgress(finalI / 100.0));
+                try {
+                    Thread.sleep(20);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+            }
+        }).start();
+
+        return loadingStage;
     }
 
 }

@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
@@ -119,11 +120,6 @@
                 </Label>
                 <VBox prefHeight="300" prefWidth="500" spacing="8.0" VBox.vgrow="ALWAYS">
 
-                    <!-- WiFi address information -->
-                    <VBox fx:id="settingVBox">
-                        <ImageView fx:id="qrImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" />
-                    </VBox>
-
                     <!-- Server port information
                     <VBox alignment="TOP_LEFT">
                         <Label text="Port">
@@ -146,6 +142,14 @@
                             </font>
                         </Label>
                         <VBox fx:id="openLibs" HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" />
+                    </VBox>
+
+                    <!-- WiFi address information -->
+                    <VBox fx:id="settingVBox">
+                        <ImageView fx:id="qrImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" />
+                  <Label prefHeight="30.0" prefWidth="107.0" text="Opacity" />
+                        <Slider fx:id="opacitySlider" blockIncrement="0.1" max="1.0" min="0.0" value="1.0" />
+
                     </VBox>
                 </VBox>
 
@@ -194,7 +198,14 @@
                 </ImageView>
             </graphic>
         </Button>
-      <Button fx:id="buttonSave" mnemonicParsing="false" prefHeight="58.0" prefWidth="61.0" text="Save" />
+      <Button fx:id="buttonSave" mnemonicParsing="false" prefHeight="58.0" prefWidth="57.0">
+         <graphic>
+            <ImageView fitHeight="47.0" fitWidth="54.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@Images/resized_logo_96px_no_bg.png" />
+               </image>
+            </ImageView>
+         </graphic></Button>
         <Button fx:id="buttonSettings" mnemonicParsing="false">
             <graphic>
                 <ImageView fitHeight="50.0" fitWidth="50.0" pickOnBounds="true" preserveRatio="true">

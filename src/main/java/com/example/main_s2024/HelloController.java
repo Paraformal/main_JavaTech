@@ -40,6 +40,8 @@ public class HelloController extends Application {
         try {
             Parent root = loader.load();
             Controller controller = loader.getController();
+            controller.bindStageOpacity(primaryStage);
+
 
             // Initial data fetch and UI update
             fetchDataAndUpdateUI(controller);
@@ -52,6 +54,7 @@ public class HelloController extends Application {
             this.primaryStage.show();
             this.primaryStage.centerOnScreen();
             this.primaryStage.setOnCloseRequest(event -> shutdownApplication());
+
 
             // Optionally set title with IP address
             setTitleWithIpAddress();

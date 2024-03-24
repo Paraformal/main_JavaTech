@@ -20,7 +20,12 @@ public class CpuStats {
 
     public String getCpuLoad() throws InterruptedException {
         long[] oldTicks = processor.getSystemCpuLoadTicks();
-        Thread.sleep(1000);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("Thread was interrupted, possibly shutting down...");
+        }
         double cpuLoad = processor.getSystemCpuLoadBetweenTicks(oldTicks) * 100;
         String roundedCpuLoad = GeneralStats.getInstance().round((float) cpuLoad, 2).toString();
         setCpuLoadInModel(Float.valueOf(roundedCpuLoad));
