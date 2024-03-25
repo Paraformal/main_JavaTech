@@ -5,14 +5,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URL;
 
 public class StageHandler {
-    private final Logger logger = LoggerFactory.getLogger(StageHandler.class);
     private Stage stage;
 
 
@@ -20,7 +17,7 @@ public class StageHandler {
         this.stage = stage;
     }
 
-    public void openNewStage(String fxmlFile, String title, boolean modal) {
+    public void openNewStage(String fxmlFile, String title, boolean modal, boolean resizeable) {
         try {
             URL fxmlUrl = getClass().getResource(fxmlFile);
             if (fxmlUrl == null) {
@@ -38,11 +35,10 @@ public class StageHandler {
                 stage.initModality(Modality.APPLICATION_MODAL);
                 stage.initOwner(stage);
             }
-
+            stage.setResizable(resizeable);
             stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("Failed to load FXML file", e);
         }
     }
 
@@ -62,7 +58,6 @@ public class StageHandler {
 
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("Failed to load FXML file", e);
         }
     }
 
@@ -102,7 +97,6 @@ public class StageHandler {
             modalStage.showAndWait();
         } catch (IOException e) {
             e.printStackTrace();
-            logger.error("Failed to load FXML file", e);
         }
     }
 

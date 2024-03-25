@@ -1,0 +1,45 @@
+/* Style for TableView */
+#reportTableView {
+    -fx-background-color: #f4f4f4; /* Light gray background */
+}
+
+/* Style for TableColumns */
+.table-column {
+    -fx-alignment: CENTER; /* Center align column content */
+    -fx-font-size: 14px; /* Set font size for column headers */
+    -fx-font-weight: bold; /* Bold font for column headers */
+    -fx-text-fill: #333333; /* Text color for column headers */
+}
+
+/* Style for TableRows */
+.table-row-cell:odd {
+    -fx-background-color: #f0f0f0; /* Alternate row color */
+}
+
+/* Style for Buttons */
+.button {
+    -fx-background-color: #4CAF50; /* Green background color */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-font-size: 12px; /* Set font size for buttons */
+    -fx-padding: 8px 12px; /* Padding for buttons */
+}
+
+/* Style for Back Button */
+#backButton {
+    -fx-background-color: #FF5722; /* Orange background color */
+    -fx-text-fill: white; /* White text color */
+    -fx-font-weight: bold; /* Bold text */
+    -fx-font-size: 12px; /* Set font size for back button */
+    -fx-padding: 8px 12px; /* Padding for back button */
+}
+
+/* Hover effect for Buttons */
+.button:hover {
+    -fx-background-color: #45A049; /* Darker green on hover */
+}
+
+/* Hover effect for Back Button */
+#backButton:hover {
+    -fx-background-color: #E64A19; /* Darker orange on hover */
+}

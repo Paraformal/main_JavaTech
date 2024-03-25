@@ -8,6 +8,8 @@ import com.example.main_s2024.Graphs.PieGraphs;
 import com.example.main_s2024.Graphs.StackedAreaGraphs;
 import com.example.main_s2024.Models.*;
 import com.example.main_s2024.Services.add_to_db;
+import com.example.main_s2024.Services.get_from_db;
+import com.example.main_s2024.StageHandler.StageHandler;
 import com.example.main_s2024.ViewsPack.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -26,6 +28,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+
+import java.util.List;
 
 
 public class Controller {
@@ -78,6 +82,8 @@ public class Controller {
     private Label disksText;
     @FXML
     private Slider opacitySlider;
+    @FXML
+    private Button ButtonViewReports;
 
     private Node systemLoadBox;
     private Node batteryBox;
@@ -146,6 +152,17 @@ public class Controller {
             }).start();
         });
 
+        ButtonViewReports.setOnAction(event -> {
+            try {
+                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                StageHandler stageHandler = new StageHandler(currentStage);
+
+                stageHandler.openNewStage("/com/example/main_s2024/report_view.fxml", "Reports", false, false);
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     public void bindStageOpacity(Stage stage) {

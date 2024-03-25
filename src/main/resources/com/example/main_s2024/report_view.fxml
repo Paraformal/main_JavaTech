@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="451.0" prefWidth="600.0" stylesheets="@styles/reportView-style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.main_s2024.ViewsPack.ReportView">
+    <children>
+        <Button fx:id="backButton" layoutX="14.0" layoutY="410.0" mnemonicParsing="false" onAction="#onBackButtonClicked" prefHeight="26.0" prefWidth="92.0" text="-- Back" />
+        <TableView fx:id="reportTableView" layoutX="-1.0" layoutY="-2.0" prefHeight="400.0" prefWidth="862.0">
+            <columns>
+                <TableColumn fx:id="reportId" prefWidth="107.20001524686813" text="Report ID" />
+                <TableColumn fx:id="systemLoadIdColumn" prefWidth="107.20001524686813" text="System Load ID" />
+                <TableColumn fx:id="batteryInfoIdColumn" prefWidth="114.4000244140625" text="Battery Info ID" />
+                <TableColumn fx:id="cpuInfoIdColumn" prefWidth="100.0" text="CPU Info ID" />
+                <TableColumn fx:id="diskInfoIdColumn" prefWidth="100.0" text="Disk Info ID" />
+                <TableColumn fx:id="systemInfoIdColumn" prefWidth="100.0" text="System Info ID" />
+                <TableColumn fx:id="timeStampColumn" prefWidth="100.0" text="Timestamp" />
+            </columns>
+        </TableView>
+    </children>
+</AnchorPane>

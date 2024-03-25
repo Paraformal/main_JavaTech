@@ -20,4 +20,8 @@ module com.example.main_s2024 {
     exports com.example.main_s2024.Utils;
     opens com.example.main_s2024.Utils to javafx.fxml;
     exports com.example.main_s2024.DataPack to com.sun.jna;
+    exports com.example.main_s2024.ViewsPack;
+    opens com.example.main_s2024.ViewsPack to javafx.fxml;
+    opens com.example.main_s2024.Models to javafx.base;
+
 }
