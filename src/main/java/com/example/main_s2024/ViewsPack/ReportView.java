@@ -1,22 +1,28 @@
 package com.example.main_s2024.ViewsPack;
 
-import com.example.main_s2024.Models.Report_db;
+import com.example.main_s2024.Models.*;
 import com.example.main_s2024.Services.delete_from_db;
 import com.example.main_s2024.Services.get_from_db;
 import com.example.main_s2024.StageHandler.StageHandler;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -62,14 +68,14 @@ public class ReportView implements Initializable {
         systemInfoIdColumn.setCellValueFactory(new PropertyValueFactory<>("systemInfoId"));
         timeStampColumn.setCellValueFactory(new PropertyValueFactory<>("timeStamp"));
 
-        initializeDeleteButtonColumn();
+        initializeActionColumn();
         loadReportData();
 
         reportTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && event.getButton().equals(MouseButton.PRIMARY)) {
                 Report_db selectedReport = reportTableView.getSelectionModel().getSelectedItem();
                 if (selectedReport != null) {
-                    System.out.println("DOUBLE ASS CLICKED");
+                    openReportDetailsView(event);
                 }
             }
         });
@@ -88,17 +94,26 @@ public class ReportView implements Initializable {
         stageHandler.hideStage();
     }
 
-    private void initializeDeleteButtonColumn() {
-        TableColumn<Report_db, Void> deleteButtonColumn = new TableColumn<>("Action");
-        deleteButtonColumn.setCellFactory(param -> new TableCell<>() {
+    private void initializeActionColumn() {
+        TableColumn<Report_db, Void> actionColumn = new TableColumn<>("Action");
+        actionColumn.setCellFactory(param -> new TableCell<>() {
             private final Button deleteButton = new Button("Delete");
+            private final Button saveButton = new Button("Save");
+            private final HBox container = new HBox(10); // 10 is the spacing between buttons
 
             {
                 deleteButton.setOnAction(event -> {
                     Report_db report = getTableView().getItems().get(getIndex());
                     deleteReport(report.getReportId());
-                    reportTableView.getItems().remove(report);
+                    getTableView().getItems().remove(report);
                 });
+
+                saveButton.setOnAction(event -> {
+                    Report_db report = getTableView().getItems().get(getIndex());
+                    saveReport(report.getReportId());
+                });
+
+                container.getChildren().addAll(deleteButton, saveButton);
             }
 
             @Override
@@ -107,11 +122,43 @@ public class ReportView implements Initializable {
                 if (empty) {
                     setGraphic(null);
                 } else {
-                    setGraphic(deleteButton);
+                    setGraphic(container);
                 }
             }
         });
-        reportTableView.getColumns().add(deleteButtonColumn);
+        reportTableView.getColumns().add(actionColumn);
+    }
+
+    private void saveReport(int reportId) {
+        get_from_db getFromDb1 = new get_from_db();
+        Report_db report = getFromDb1.getReportById(reportId);
+        BatteryInfo batteryInfo = getFromDb1.getBatteryInfoById(report.getBatteryInfoId());
+        CpuInfo cpuInfo = getFromDb1.getCpuInfoById(report.getCpuInfoId());
+        DiskInfo diskInfo = getFromDb1.getDiskInfoById(report.getDiskInfoId());
+        SystemLoad systemLoad = getFromDb1.getSystemLoadById(report.getSystemLoadId());
+        SystemInfo systemInfo = getFromDb1.getSystemInfoById(report.getSystemInfoId());
+
+        String reportData = "Report ID: " + report.getReportId() + "\n" +
+                "Time Stamp: " + report.getTimeStamp() + "\n" +
+                "Battery Info: " + batteryInfo.toString() + "\n" +
+                "CPU Info: " + cpuInfo.toString() + "\n" +
+                "Disk Info: " + diskInfo.toString() + "\n" +
+                "System Load: " + systemLoad.toString() + "\n" +
+                "System Info: " + systemInfo.toString() + "\n";
+
+        String fileName = "saved_report_" + report.getReportId() + ".txt";
+        try {
+            Files.write(Paths.get(fileName), reportData.getBytes(), StandardOpenOption.CREATE);
+            System.out.println("Report saved to " + fileName);
+            //Alert view saved successfully
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Report Saved");
+            alert.setHeaderText("Report saved successfully");
+            alert.setContentText("Report saved to " + fileName);
+            alert.showAndWait();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void deleteReport(int reportId) {
@@ -119,5 +166,27 @@ public class ReportView implements Initializable {
         deleteFromDb.deleteReportById(reportId);
     }
 
+    public void openReportDetailsView(MouseEvent event) {
+        try {
+            Report_db selectedReport = reportTableView.getSelectionModel().getSelectedItem();
+            if (selectedReport != null) {
+                int report_id = selectedReport.getReportId();
+                System.out.println("HELLO IS HERE: " + report_id);
+
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/main_s2024/report_details_view.fxml"));
+                Parent root = loader.load();
+
+                ReportDetailsView controller = loader.getController();
+                controller.setProjectId(report_id);
+
+                Stage currentStage = (Stage) reportTableView.getScene().getWindow();
+                Scene scene = new Scene(root);
+                currentStage.setScene(scene);
+                currentStage.show();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 }

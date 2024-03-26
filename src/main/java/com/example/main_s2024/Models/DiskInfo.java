@@ -16,6 +16,9 @@ public class DiskInfo {
         this.timestamp = new Date();
     }
 
+    public DiskInfo() {
+    }
+
     public int getId() {
         return id;
     }
@@ -54,5 +57,15 @@ public class DiskInfo {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String toString() {
+        return "DiskInfo{" +
+                "id=" + id +
+                ", diskModel='" + diskModel + '\'' +
+                ", diskMaxCapacity=" + diskMaxCapacity +
+                ", diskCurrentFreeSpace=" + diskCurrentFreeSpace +
+                ", timestamp=" + timestamp +
+                '}';
     }
 }

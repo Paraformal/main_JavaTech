@@ -16,6 +16,9 @@ public class BatteryInfo {
         this.timestamp = new Date();
     }
 
+    public BatteryInfo() {
+    }
+
     public int getId() {
         return id;
     }
@@ -54,6 +57,16 @@ public class BatteryInfo {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String toString() {
+        return "BatteryInfo{" +
+                "id=" + id +
+                ", batteryModel='" + batteryModel + '\'' +
+                ", maxAc=" + maxAc +
+                ", currentLoad=" + currentLoad +
+                ", timestamp=" + timestamp +
+                '}';
     }
 
 

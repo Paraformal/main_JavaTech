@@ -21,6 +21,9 @@ public class Report_db {
         this.timeStamp = new Date();
     }
 
+    public Report_db() {
+    }
+
     public int getReportId() {
         return reportId;
     }

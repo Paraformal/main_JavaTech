@@ -21,6 +21,9 @@ public class SystemInfo {
         this.timestamp = new Date();
     }
 
+    public SystemInfo() {
+    }
+
     public int getId() {
         return id;
     }
@@ -75,5 +78,14 @@ public class SystemInfo {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String toString() {
+        return "Windows Info: " + windowsInfo + "\n" +
+                "PC Name: " + pcName + "\n" +
+                "PC Board Manufacturer: " + pcBoardManufacturer + "\n" +
+                "PC Board Version: " + pcBoardVersion + "\n" +
+                "PC Board Model: " + pcBoardModel + "\n" +
+                "Timestamp: " + timestamp + "\n";
     }
 }

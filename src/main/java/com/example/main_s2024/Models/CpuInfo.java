@@ -16,6 +16,9 @@ public class CpuInfo {
         this.timestamp = new Date();
     }
 
+    public CpuInfo() {
+    }
+
     public int getId() {
         return id;
     }
@@ -54,5 +57,15 @@ public class CpuInfo {
 
     public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String toString() {
+        return "CpuInfo{" +
+                "id=" + id +
+                ", cpuModel='" + cpuModel + '\'' +
+                ", cpuVersion='" + cpuVersion + '\'' +
+                ", currentCpuLoad=" + currentCpuLoad +
+                ", timestamp=" + timestamp +
+                '}';
     }
 }

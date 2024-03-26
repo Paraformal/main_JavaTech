@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="518.0" prefWidth="746.0" stylesheets="@styles/report_details-style.css" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.main_s2024.ViewsPack.ReportDetailsView">
+    <children>
+        <TabPane fx:id="tabPane" layoutY="-4.0" prefHeight="527.0" prefWidth="746.0" tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab fx:id="batteryInfoTab" text="battery_info">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label layoutX="32.0" layoutY="22.0" prefHeight="32.0" prefWidth="142.0" text="Report Battery Id: " />
+                                <Label fx:id="lblBatteryId" layoutX="198.0" layoutY="25.0" prefHeight="26.0" prefWidth="130.0" />
+                                <Label layoutX="32.0" layoutY="72.0" prefHeight="32.0" prefWidth="142.0" text="Battery Model:" />
+                                <Label fx:id="lblBatteryModel" layoutX="198.0" layoutY="75.0" prefHeight="26.0" prefWidth="130.0" />
+                                <Label layoutX="32.0" layoutY="129.0" prefHeight="32.0" prefWidth="142.0" text="Battery Current Load:" />
+                                <Label fx:id="lblBatteryCurrentLoad" layoutX="198.0" layoutY="132.0" prefHeight="26.0" prefWidth="130.0" />
+                                <Label layoutX="32.0" layoutY="182.0" prefHeight="32.0" prefWidth="142.0" text="Time Stamp:" />
+                                <Label fx:id="lblBatteryTimeStamp" layoutX="198.0" layoutY="185.0" prefHeight="26.0" prefWidth="130.0" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+                <Tab fx:id="cpuInfoTab" text="cpu_info">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label layoutX="32.0" layoutY="22.0" prefHeight="32.0" prefWidth="142.0" text="CPU ID: " />
+                                <Label fx:id="lblCpuId" layoutX="198.0" layoutY="25.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="72.0" prefHeight="32.0" prefWidth="142.0" text="CPU Model:" />
+                                <Label fx:id="lblCpuModel" layoutX="198.0" layoutY="75.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="122.0" prefHeight="32.0" prefWidth="142.0" text="CPU Version:" />
+                                <Label fx:id="lblCpuVersion" layoutX="198.0" layoutY="125.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="172.0" prefHeight="32.0" prefWidth="142.0" text="Current CPU Load:" />
+                                <Label fx:id="lblCurrentCpuLoad" layoutX="198.0" layoutY="175.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="222.0" prefHeight="32.0" prefWidth="142.0" text="Timestamp:" />
+                                <Label fx:id="lblCpuTimestamp" layoutX="198.0" layoutY="225.0" prefHeight="26.0" prefWidth="130.0" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="diskInfoTab" text="disk_info">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label layoutX="32.0" layoutY="22.0" prefHeight="32.0" prefWidth="150.0" text="Disk ID:" />
+                                <Label fx:id="lblDiskId" layoutX="198.0" layoutY="25.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="72.0" prefHeight="32.0" prefWidth="150.0" text="Disk Model:" />
+                                <Label fx:id="lblDiskModel" layoutX="198.0" layoutY="75.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="122.0" prefHeight="32.0" prefWidth="150.0" text="Max Capacity:" />
+                                <Label fx:id="lblDiskMaxCapacity" layoutX="198.0" layoutY="125.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="172.0" prefHeight="32.0" prefWidth="150.0" text="Current Free Space:" />
+                                <Label fx:id="lblDiskCurrentFreeSpace" layoutX="198.0" layoutY="175.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="222.0" prefHeight="32.0" prefWidth="150.0" text="Timestamp:" />
+                                <Label fx:id="lblDiskTimestamp" layoutX="198.0" layoutY="225.0" prefHeight="26.0" prefWidth="130.0" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="systemInfoTab" text="system_info">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label layoutX="32.0" layoutY="22.0" prefHeight="32.0" prefWidth="150.0" text="System ID:" />
+                                <Label fx:id="lblSystemId" layoutX="198.0" layoutY="25.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="62.0" prefHeight="32.0" prefWidth="150.0" text="Windows Info:" />
+                                <Label fx:id="lblWindowsInfo" layoutX="198.0" layoutY="65.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="102.0" prefHeight="32.0" prefWidth="150.0" text="PC Name:" />
+                                <Label fx:id="lblPcName" layoutX="198.0" layoutY="105.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="142.0" prefHeight="32.0" prefWidth="150.0" text="Board Manufacturer:" />
+                                <Label fx:id="lblPcBoardManufacturer" layoutX="198.0" layoutY="145.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="182.0" prefHeight="32.0" prefWidth="150.0" text="Board Version:" />
+                                <Label fx:id="lblPcBoardVersion" layoutX="198.0" layoutY="185.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="222.0" prefHeight="32.0" prefWidth="150.0" text="Board Model:" />
+                                <Label fx:id="lblPcBoardModel" layoutX="198.0" layoutY="225.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="262.0" prefHeight="32.0" prefWidth="150.0" text="Timestamp:" />
+                                <Label fx:id="lblSystemTimestamp" layoutX="198.0" layoutY="265.0" prefHeight="26.0" prefWidth="130.0" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+                <Tab fx:id="systemLoadTab" text="system_load">
+                    <content>
+                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                            <children>
+                                <Label layoutX="32.0" layoutY="22.0" prefHeight="32.0" prefWidth="150.0" text="Load ID:" />
+                                <Label fx:id="lblLoadId" layoutX="198.0" layoutY="25.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="62.0" prefHeight="32.0" prefWidth="150.0" text="System Load:" />
+                                <Label fx:id="lblSystemLoad" layoutX="198.0" layoutY="65.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="102.0" prefHeight="32.0" prefWidth="150.0" text="Memory Load:" />
+                                <Label fx:id="lblMemoryLoad" layoutX="198.0" layoutY="105.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="142.0" prefHeight="32.0" prefWidth="150.0" text="Battery Percentage:" />
+                                <Label fx:id="lblBatteryPercentage" layoutX="198.0" layoutY="145.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="182.0" prefHeight="32.0" prefWidth="150.0" text="Download Speed:" />
+                                <Label fx:id="lblDownloadSpeed" layoutX="198.0" layoutY="185.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="222.0" prefHeight="32.0" prefWidth="150.0" text="Upload Speed:" />
+                                <Label fx:id="lblUploadSpeed" layoutX="198.0" layoutY="225.0" prefHeight="26.0" prefWidth="130.0" />
+
+                                <Label layoutX="32.0" layoutY="262.0" prefHeight="32.0" prefWidth="150.0" text="Timestamp:" />
+                                <Label fx:id="lblSystemLoadTimestamp" layoutX="198.0" layoutY="265.0" prefHeight="26.0" prefWidth="130.0" />
+                            </children>
+                        </AnchorPane>
+                    </content>
+                </Tab>
+
+            </tabs>
+        </TabPane>
+    </children>
+</AnchorPane>

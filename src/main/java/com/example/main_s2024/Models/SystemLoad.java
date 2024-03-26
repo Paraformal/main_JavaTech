@@ -21,6 +21,9 @@ public class SystemLoad {
         this.timestamp = new Date();
     }
 
+    public SystemLoad() {
+    }
+
     public int getId() {
         return id;
     }
