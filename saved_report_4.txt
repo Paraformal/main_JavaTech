@@ -1,0 +1,13 @@
+Report ID: 4
+Time Stamp: Mon Mar 25 19:11:38 EET 2024
+Battery Info: BatteryInfo{id=14, batteryModel='Dell 0MGJN9', maxAc=65, currentLoad=100, timestamp=Mon Mar 25 19:11:38 EET 2024}
+CPU Info: CpuInfo{id=14, cpuModel='Intel', cpuVersion='i7', currentCpuLoad=1.37, timestamp=Mon Mar 25 19:11:38 EET 2024}
+Disk Info: DiskInfo{id=13, diskModel=' Local Fixed Disk', diskMaxCapacity=426, diskCurrentFreeSpace=84, timestamp=Mon Mar 25 19:11:38 EET 2024}
+System Load: SystemLoad{id=14, systemLoad=3.71, memoryLoad=11.9, batteryPercentage=100, downloadSpeed=0.0, uploadSpeed=0.0, timestamp=Mon Mar 25 19:11:38 EET 2024}
+System Info: Windows Info: Microsoft Windows 11 build 22635
+PC Name: Dell Inc. Vostro 3500
+PC Board Manufacturer: Dell Inc.
+PC Board Version: A00
+PC Board Model: unknown
+Timestamp: Mon Mar 25 19:11:38 EET 2024
+

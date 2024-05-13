@@ -54,9 +54,20 @@ public class ReportView implements Initializable {
     @FXML
     private TableColumn<Report_db, Date> timeStampColumn;
 
+    @FXML
+    private TableColumn<Report_db, String> systemIdColumn;
+
     private get_from_db getFromDb;
 
     private delete_from_db deleteFromDb;
+
+    private String systemId = "50-2F-9B-9E-EA-8F";
+
+    private boolean isAdmin = true;
+
+
+    public ReportView() {
+    }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -66,10 +77,12 @@ public class ReportView implements Initializable {
         cpuInfoIdColumn.setCellValueFactory(new PropertyValueFactory<>("cpuInfoId"));
         diskInfoIdColumn.setCellValueFactory(new PropertyValueFactory<>("diskInfoId"));
         systemInfoIdColumn.setCellValueFactory(new PropertyValueFactory<>("systemInfoId"));
+        systemIdColumn.setCellValueFactory(new PropertyValueFactory<>("systemId"));
         timeStampColumn.setCellValueFactory(new PropertyValueFactory<>("timeStamp"));
 
         initializeActionColumn();
         loadReportData();
+
 
         reportTableView.setOnMouseClicked(event -> {
             if (event.getClickCount() == 2 && event.getButton().equals(MouseButton.PRIMARY)) {
@@ -81,10 +94,25 @@ public class ReportView implements Initializable {
         });
     }
 
+    public void setSystemId(String systemId) {
+        this.systemId = systemId;
+    }
+
     private void loadReportData() {
-        getFromDb = new get_from_db();
-        List<Report_db> reports = getFromDb.getAllReports();
-        reportTableView.getItems().setAll(reports);
+        System.out.println("NIGGAAA IAM HERE BROOOOO " + isAdmin);
+        if (!isAdmin) {
+            getFromDb = new get_from_db();
+            try {
+                List<Report_db> reports = getFromDb.getAllReportsById(this.systemId);
+                reportTableView.getItems().setAll(reports);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else {
+            getFromDb = new get_from_db();
+            List<Report_db> reports = getFromDb.getAllReports();
+            reportTableView.getItems().setAll(reports);
+        }
     }
 
     public void onBackButtonClicked(ActionEvent event) {
@@ -99,7 +127,7 @@ public class ReportView implements Initializable {
         actionColumn.setCellFactory(param -> new TableCell<>() {
             private final Button deleteButton = new Button("Delete");
             private final Button saveButton = new Button("Save");
-            private final HBox container = new HBox(10); // 10 is the spacing between buttons
+            private final HBox container = new HBox(10);
 
             {
                 deleteButton.setOnAction(event -> {
@@ -171,7 +199,6 @@ public class ReportView implements Initializable {
             Report_db selectedReport = reportTableView.getSelectionModel().getSelectedItem();
             if (selectedReport != null) {
                 int report_id = selectedReport.getReportId();
-                System.out.println("HELLO IS HERE: " + report_id);
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/main_s2024/report_details_view.fxml"));
                 Parent root = loader.load();
@@ -187,6 +214,15 @@ public class ReportView implements Initializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setIsAdmin(boolean isAdmin) {
+        System.out.println("FINNALY DONE" + isAdmin);
+        this.isAdmin = isAdmin;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
     }
 
 }

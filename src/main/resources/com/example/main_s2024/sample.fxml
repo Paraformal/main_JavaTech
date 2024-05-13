@@ -147,6 +147,8 @@
                     <!-- WiFi address information -->
                     <VBox fx:id="settingVBox">
                   <Button fx:id="ButtonViewReports" mnemonicParsing="false" prefHeight="26.0" prefWidth="106.0" text="View Reports" />
+                  <Button fx:id="ButtonViewAdmin" mnemonicParsing="false" prefHeight="26.0" prefWidth="106.0" text="Admin Access" />
+                  <Label fx:id="systemIdLbl" prefHeight="39.0" prefWidth="461.0" text="System Id: " />
                         <ImageView fx:id="qrImageView" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" />
                   <Label prefHeight="30.0" prefWidth="107.0" text="Opacity" />
                         <Slider fx:id="opacitySlider" blockIncrement="0.1" max="1.0" min="0.0" value="1.0" />

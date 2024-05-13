@@ -13,9 +13,11 @@ import com.example.main_s2024.StageHandler.StageHandler;
 import com.example.main_s2024.ViewsPack.*;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
 import javafx.scene.Group;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.PieChart;
@@ -29,11 +31,16 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 
 public class Controller {
 
+    private static final AtomicReference<String> systemId = new AtomicReference<>(null);
     @FXML
     private VBox settingVBox;
     @FXML
@@ -84,7 +91,10 @@ public class Controller {
     private Slider opacitySlider;
     @FXML
     private Button ButtonViewReports;
-
+    @FXML
+    private Button ButtonViewAdmin;
+    @FXML
+    private Label systemIdLbl;
     private Node systemLoadBox;
     private Node batteryBox;
     private Node cpuBox;
@@ -94,8 +104,30 @@ public class Controller {
     private LineGraphs lineChartClass;
     private StackedAreaGraphs stackedAreaChartClass;
     private MultiLineGraphs multiLineGraphs;
+    private String systemIdString;
 
     private DataBegin tempDataBegin;
+
+
+    private static String getSystemId() {
+        if (systemId.get() == null) {
+            try {
+                InetAddress localHost = InetAddress.getLocalHost();
+                NetworkInterface network = NetworkInterface.getByInetAddress(localHost);
+                byte[] mac = network.getHardwareAddress();
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < mac.length; i++) {
+                    sb.append(String.format("%02X%s", mac[i], (i < mac.length - 1) ? "-" : ""));
+                }
+
+                systemId.compareAndSet(null, sb.toString());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return systemId.get();
+    }
 
     @FXML
     private void initialize() {
@@ -126,7 +158,7 @@ public class Controller {
         buttonSystemInfo.setOnAction(event -> changeView(systemInfoBox));
         buttonSettings.setOnAction(event -> changeView(settingsBox));
         buttonSave.setOnAction(event -> {
-            Stage loadingStage = showLoadingPopup(); // Show loading popup
+            Stage loadingStage = showLoadingPopup();
 
             new Thread(() -> {
                 try {
@@ -137,8 +169,12 @@ public class Controller {
                     int cpuInfoId = add_to_db.add_to_cpuInfo();
                     int diskInfoId = add_to_db.add_to_diskInfo();
                     int sysetmInfoId = add_to_db.add_to_systemInfo();
+                    String systemId = getSystemId();
 
-                    Report_db report_db = new Report_db(systemLoadId, batteryInfoId, cpuInfoId, diskInfoId, sysetmInfoId);
+                    Platform.runLater(() -> systemIdLbl.setText("System ID: " + systemId));
+                    systemIdString = systemId;
+
+                    Report_db report_db = new Report_db(systemLoadId, batteryInfoId, cpuInfoId, diskInfoId, sysetmInfoId, systemId);
                     add_to_db.add_report(report_db);
 
                     Thread.sleep(2000);
@@ -157,7 +193,52 @@ public class Controller {
                 Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
                 StageHandler stageHandler = new StageHandler(currentStage);
 
-                stageHandler.openNewStage("/com/example/main_s2024/report_view.fxml", "Reports", false, false);
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/main_s2024/report_view.fxml"));
+                Parent root = loader.load();
+
+                ReportView reportController = loader.getController();
+
+                reportController.setIsAdmin(false);
+
+                stageHandler.openNewStage(root, "Reports", false,
+                        false, reportController);
+
+
+//                ReportView reportViewController = stageHandler.getLoader("/com/example/main_s2024/report_view.fxml").getController();
+//
+//                Platform.runLater(() -> reportViewController.setSystemId(this.systemIdString));
+
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        ButtonViewAdmin.setOnAction(event -> {
+            try {
+                Stage currentStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                StageHandler stageHandler = new StageHandler(currentStage);
+
+                stageHandler.openNewStage("/com/example/main_s2024/access_view.fxml", "Admin", false,
+                        false);
+
+
+                AccessView accessView = stageHandler.getLoader("/com/example/main_s2024/access_view.fxml")
+                        .getController();
+
+                accessView.setOnLoginSuccessCallback((dummy) -> {
+                    try {
+                        stageHandler.openNewStage("/com/example/main_s2024/admin_view.fxml", "Admin", false,
+                                false);
+                    } catch (Exception e) {
+                        throw new RuntimeException(e);
+                    }
+
+                });
+
+
+                stageHandler.openNewStage("/com/example/main_s2024/report_view.fxml", "Reports", false,
+                        false);
 
             } catch (Exception e) {
                 throw new RuntimeException(e);

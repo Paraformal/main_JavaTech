@@ -1,6 +1,7 @@
 package com.example.main_s2024.StageHandler;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Modality;
@@ -16,6 +17,28 @@ public class StageHandler {
     public StageHandler(Stage stage) {
         this.stage = stage;
     }
+
+    public void openNewStage(Parent root, String title, boolean modal, boolean resizable, Object controller) {
+        try {
+            Stage stage = new Stage();
+            stage.setTitle(title);
+            stage.setScene(new Scene(root));
+
+            // Set the controller
+            FXMLLoader loader = new FXMLLoader();
+            loader.setController(controller);
+
+            if (modal) {
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.initOwner(stage);
+            }
+            stage.setResizable(resizable);
+            stage.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void openNewStage(String fxmlFile, String title, boolean modal, boolean resizeable) {
         try {
@@ -108,5 +131,14 @@ public class StageHandler {
         stage.getScene().getStylesheets().add(stylesheet);
     }
 
+    public FXMLLoader getLoader(String fxmlPath) throws IOException {
+        URL fxmlUrl = getClass().getResource(fxmlPath);
+        if (fxmlUrl == null) {
+            throw new IOException("Cannot find FXML file: " + fxmlPath);
+        }
+
+        FXMLLoader loader = new FXMLLoader(fxmlUrl);
+        return loader;
+    }
 
 }

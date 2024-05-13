@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
-
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.main_s2024.ViewsPack.AccessView">
+   <children>
+      <TextField fx:id="usernameField" layoutX="359.0" layoutY="44.0" prefHeight="26.0" prefWidth="167.0" promptText="Username" />
+      <Button fx:id="loginButton" layoutX="421.0" layoutY="210.0" mnemonicParsing="false" text="Login" />
+      <PasswordField fx:id="passwordField" layoutX="360.0" layoutY="131.0" prefHeight="26.0" prefWidth="167.0" promptText="Password" />
+      <ImageView fitHeight="385.0" fitWidth="306.0" layoutY="100.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@Images/appLogo.png" />
+         </image>
+      </ImageView>
+      <Label alignment="CENTER" layoutX="73.0" layoutY="33.0" prefHeight="46.0" prefWidth="160.0" text="Admin Login" textAlignment="CENTER">
+         <font>
+            <Font name="Arial Rounded MT Bold" size="24.0" />
+         </font>
+      </Label>
+      <RadioButton layoutX="500.0" layoutY="135.0" mnemonicParsing="false" onAction="#togglePasswordVisibility" />
+   </children>
 </AnchorPane>

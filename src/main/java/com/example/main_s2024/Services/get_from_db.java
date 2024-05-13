@@ -2,16 +2,31 @@ package com.example.main_s2024.Services;
 
 import com.example.main_s2024.DbHandler.DbHandler;
 import com.example.main_s2024.Models.*;
+import com.google.gson.reflect.TypeToken;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
+import com.google.gson.Gson;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
+
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class get_from_db {
+
+    private final OkHttpClient client = new OkHttpClient();
+    private final String baseUrl = "http://localhost:8080/api/cpu-status";
+
 
     public List<SystemLoad> getAllSystemLoads() {
         Connection connection = null;
@@ -49,71 +64,90 @@ public class get_from_db {
     }
 
     public SystemLoad getSystemLoadById(int id) {
-        Connection connection = null;
         SystemLoad systemLoad = null;
+        Response response = null;
 
         try {
-            connection = DbHandler.openConnection();
-            String query = "SELECT * FROM system_load WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, id); // Set the id parameter in the SQL query
-            ResultSet resultSet = statement.executeQuery();
+            String url = baseUrl + "/system-load/get-by-id/" + id;
 
-            if (resultSet.next()) {
-                float systemLoadValue = resultSet.getFloat("system_load");
-                float memoryLoad = resultSet.getFloat("memory_load");
-                int batteryPercentage = resultSet.getInt("battery_percentage");
-                float downloadSpeed = resultSet.getFloat("download_speed");
-                float uploadSpeed = resultSet.getFloat("upload_speed");
-                // Handle potential null timestamp
-                java.util.Date timestamp = resultSet.getTimestamp("timestamp") != null ?
-                        new java.util.Date(resultSet.getTimestamp("timestamp").getTime()) : null;
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
 
-                // Check if timestamp is not null before creating a SystemLoad object
-                if (timestamp != null) {
+            response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    JSONObject jsonObject = new JSONObject(responseBody.string());
+
+                    int apiId = jsonObject.getInt("id");
+                    float systemLoadValue = (float) jsonObject.getDouble("systemLoad");
+                    float memoryLoad = (float) jsonObject.getDouble("memoryLoad");
+                    int batteryPercentage = jsonObject.getInt("batteryPercentage");
+                    float downloadSpeed = (float) jsonObject.getDouble("downloadSpeed");
+                    float uploadSpeed = (float) jsonObject.getDouble("uploadSpeed");
+                    String timestampString = jsonObject.getString("timestamp");
+
+                    java.util.Date timestamp = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(timestampString);
+
                     systemLoad = new SystemLoad(systemLoadValue, memoryLoad, batteryPercentage, downloadSpeed, uploadSpeed);
                     systemLoad.setTimestamp(timestamp);
-                    systemLoad.setId(resultSet.getInt("id"));
+                    systemLoad.setId(apiId);
                 }
+            } else {
+                System.out.println("Request failed with code: " + ((Response) response).code());
             }
-        } catch (SQLException e) {
+        } catch (IOException | org.json.JSONException | java.text.ParseException e) {
             e.printStackTrace();
         } finally {
-            DbHandler.closeConnection(connection);
+            if (response != null) {
+                response.close();
+            }
         }
 
         return systemLoad;
     }
 
-
     public CpuInfo getCpuInfoById(int id) {
-        Connection connection = null;
         CpuInfo cpuInfo = null;
+        Response response = null;
 
         try {
-            connection = DbHandler.openConnection();
-            String query = "SELECT * FROM cpu_info WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
+            String url = baseUrl + "/cpu-info/get-by-id/" + id;
 
-            if (resultSet.next()) {
-                String cpuModel = resultSet.getString("cpu_model");
-                String cpuVersion = resultSet.getString("cpu_version");
-                float currentCpuLoad = resultSet.getFloat("current_cpu_load");
-                java.util.Date timestamp = resultSet.getTimestamp("timestamp") != null ?
-                        new java.util.Date(resultSet.getTimestamp("timestamp").getTime()) : null;
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
 
-                cpuInfo = new CpuInfo(cpuModel, cpuVersion, currentCpuLoad);
-                cpuInfo.setId(resultSet.getInt("id"));
-                if (timestamp != null) {
+            response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    JSONObject jsonObject = new JSONObject(responseBody.string());
+
+                    int apiId = jsonObject.getInt("id");
+                    String cpuModel = jsonObject.getString("cpuModel");
+                    String cpuVersion = jsonObject.getString("cpuVersion");
+                    float currentCpuLoad = (float) jsonObject.getDouble("currentCpuLoad");
+                    String timestampString = jsonObject.getString("timestamp");
+
+                    java.util.Date timestamp = java.util.Date.from(java.time.ZonedDateTime.parse(timestampString).toInstant());
+
+                    cpuInfo = new CpuInfo(cpuModel, cpuVersion, currentCpuLoad);
+                    cpuInfo.setId(apiId);
                     cpuInfo.setTimestamp(timestamp);
                 }
+            } else {
+                System.out.println("Request failed with code: " + response.code());
             }
-        } catch (SQLException e) {
+        } catch (IOException | org.json.JSONException e) {
             e.printStackTrace();
         } finally {
-            DbHandler.closeConnection(connection);
+            if (response != null) {
+                response.close();
+            }
         }
 
         return cpuInfo;
@@ -153,33 +187,44 @@ public class get_from_db {
     }
 
     public BatteryInfo getBatteryInfoById(int id) {
-        Connection connection = null;
         BatteryInfo batteryInfo = null;
+        Response response = null;
 
         try {
-            connection = DbHandler.openConnection();
-            String query = "SELECT * FROM battery_info WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
+            String url = baseUrl + "/battery-info/get-by-id/" + id;
 
-            if (resultSet.next()) {
-                String batteryModel = resultSet.getString("battery_model");
-                int maxAc = resultSet.getInt("max_ac");
-                int currentLoad = resultSet.getInt("current_load");
-                java.util.Date timestamp = resultSet.getTimestamp("timestamp") != null ?
-                        new java.util.Date(resultSet.getTimestamp("timestamp").getTime()) : null;
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
 
-                batteryInfo = new BatteryInfo(batteryModel, maxAc, currentLoad);
-                batteryInfo.setId(resultSet.getInt("id"));
-                if (timestamp != null) {
+            response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    JSONObject jsonObject = new JSONObject(responseBody.string());
+
+                    int apiId = jsonObject.getInt("id");
+                    String batteryModel = jsonObject.getString("batteryModel");
+                    int maxAc = jsonObject.getInt("maxAc");
+                    int currentLoad = jsonObject.getInt("currentLoad");
+                    String timestampString = jsonObject.getString("timestamp");
+
+                    java.util.Date timestamp = java.util.Date.from(java.time.ZonedDateTime.parse(timestampString).toInstant());
+
+                    batteryInfo = new BatteryInfo(batteryModel, maxAc, currentLoad);
+                    batteryInfo.setId(apiId);
                     batteryInfo.setTimestamp(timestamp);
                 }
+            } else {
+                System.out.println("Request failed with code: " + response.code());
             }
-        } catch (SQLException e) {
+        } catch (IOException | org.json.JSONException e) {
             e.printStackTrace();
         } finally {
-            DbHandler.closeConnection(connection);
+            if (response != null) {
+                response.close();
+            }
         }
 
         return batteryInfo;
@@ -219,33 +264,45 @@ public class get_from_db {
     }
 
     public DiskInfo getDiskInfoById(int id) {
-        Connection connection = null;
         DiskInfo diskInfo = null;
+        Response response = null;
 
         try {
-            connection = DbHandler.openConnection();
-            String query = "SELECT * FROM disk_info WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
+            String url = baseUrl + "/disk-info/get-by-id/" + id;
 
-            if (resultSet.next()) {
-                String diskModel = resultSet.getString("disk_model");
-                int diskMaxCapacity = resultSet.getInt("disk_max_capacity");
-                int diskCurrentFreeSpace = resultSet.getInt("disk_current_freeSpace");
-                java.util.Date timestamp = resultSet.getTimestamp("timestamp") != null ?
-                        new java.util.Date(resultSet.getTimestamp("timestamp").getTime()) : null;
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
 
-                diskInfo = new DiskInfo(diskModel, diskMaxCapacity, diskCurrentFreeSpace);
-                diskInfo.setId(resultSet.getInt("id"));
-                if (timestamp != null) {
+            response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    JSONObject jsonObject = new JSONObject(responseBody.string());
+                    System.out.println(jsonObject + "I AM DYING");
+
+                    int apiId = jsonObject.getInt("id");
+                    String diskModel = jsonObject.getString("diskModel");
+                    int diskMaxCapacity = jsonObject.getInt("diskMaxCapacity");
+                    int diskCurrentFreeSpace = jsonObject.getInt("diskCurrentFreespace");
+                    String timestampString = jsonObject.getString("timestamp");
+
+                    java.util.Date timestamp = java.util.Date.from(java.time.ZonedDateTime.parse(timestampString).toInstant());
+
+                    diskInfo = new DiskInfo(diskModel, diskMaxCapacity, diskCurrentFreeSpace);
+                    diskInfo.setId(apiId);
                     diskInfo.setTimestamp(timestamp);
                 }
+            } else {
+                System.out.println("Request failed with code: " + response.code());
             }
-        } catch (SQLException e) {
+        } catch (IOException | org.json.JSONException e) {
             e.printStackTrace();
         } finally {
-            DbHandler.closeConnection(connection);
+            if (response != null) {
+                response.close();
+            }
         }
 
         return diskInfo;
@@ -285,35 +342,46 @@ public class get_from_db {
     }
 
     public SystemInfo getSystemInfoById(int id) {
-        Connection connection = null;
         SystemInfo systemInfo = null;
+        Response response = null;
 
         try {
-            connection = DbHandler.openConnection();
-            String query = "SELECT * FROM system_info WHERE id = ?";
-            PreparedStatement statement = connection.prepareStatement(query);
-            statement.setInt(1, id);
-            ResultSet resultSet = statement.executeQuery();
+            String url = baseUrl + "/system-info/get-by-id/" + id;
 
-            if (resultSet.next()) {
-                String windowsInfo = resultSet.getString("windows_info");
-                String pcName = resultSet.getString("pc_name");
-                String pcBoardManufacturer = resultSet.getString("pc_board_manufacturer");
-                String pcBoardVersion = resultSet.getString("pc_board_version");
-                String pcBoardModel = resultSet.getString("pc_board_model");
-                java.util.Date timestamp = resultSet.getTimestamp("timestamp") != null ?
-                        new java.util.Date(resultSet.getTimestamp("timestamp").getTime()) : null;
+            Request request = new Request.Builder()
+                    .url(url)
+                    .build();
 
-                systemInfo = new SystemInfo(windowsInfo, pcName, pcBoardManufacturer, pcBoardVersion, pcBoardModel);
-                systemInfo.setId(resultSet.getInt("id"));
-                if (timestamp != null) {
+            response = client.newCall(request).execute();
+
+            if (response.isSuccessful()) {
+                ResponseBody responseBody = response.body();
+                if (responseBody != null) {
+                    JSONObject jsonObject = new JSONObject(responseBody.string());
+
+                    int apiId = jsonObject.getInt("id");
+                    String windowsInfo = jsonObject.getString("windowsInfo");
+                    String pcName = jsonObject.getString("pcName");
+                    String pcBoardManufacturer = jsonObject.getString("pcBoardManufacturer");
+                    String pcBoardVersion = jsonObject.getString("pcBoardVersion");
+                    String pcBoardModel = jsonObject.getString("pcBoardModel");
+                    String timestampString = jsonObject.getString("timestamp");
+
+                    java.util.Date timestamp = java.util.Date.from(java.time.ZonedDateTime.parse(timestampString).toInstant());
+
+                    systemInfo = new SystemInfo(windowsInfo, pcName, pcBoardManufacturer, pcBoardVersion, pcBoardModel);
+                    systemInfo.setId(apiId);
                     systemInfo.setTimestamp(timestamp);
                 }
+            } else {
+                System.out.println("Request failed with code: " + response.code());
             }
-        } catch (SQLException e) {
+        } catch (IOException | org.json.JSONException e) {
             e.printStackTrace();
         } finally {
-            DbHandler.closeConnection(connection);
+            if (response != null) {
+                response.close();
+            }
         }
 
         return systemInfo;
@@ -371,11 +439,10 @@ public class get_from_db {
                 int cpuInfoId = resultSet.getInt("cpu_info_id");
                 int diskInfoId = resultSet.getInt("disk_info_id");
                 int systemInfoId = resultSet.getInt("system_info_id");
-                Date timeStamp = new Date(resultSet.getTimestamp("timestamp").getTime());
+                String systemId = resultSet.getString("system_id");
 
-                report = new Report_db(systemLoadId, batteryInfoId, cpuInfoId, diskInfoId, systemInfoId);
+                report = new Report_db(systemLoadId, batteryInfoId, cpuInfoId, diskInfoId, systemInfoId, systemId);
                 report.setReportId(resultSet.getInt("report_id"));
-                report.setTimeStamp(timeStamp);
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -402,15 +469,12 @@ public class get_from_db {
                 int cpuInfoId = resultSet.getInt("cpu_info_id");
                 int diskInfoId = resultSet.getInt("disk_info_id");
                 int systemInfoId = resultSet.getInt("system_info_id");
-                Date timeStamp = resultSet.getTimestamp("timestamp") != null
-                        ? new Date(resultSet.getTimestamp("timestamp").getTime())
-                        : null;
+                String systemId = resultSet.getString("system_id");
 
-                Report_db report = new Report_db(systemLoadId, batteryInfoId, cpuInfoId, diskInfoId, systemInfoId);
+
+                Report_db report = new Report_db(systemLoadId, batteryInfoId, cpuInfoId, diskInfoId, systemInfoId, systemId);
                 report.setReportId(resultSet.getInt("report_id"));
-                if (timeStamp != null) {
-                    report.setTimeStamp(timeStamp);
-                }
+
                 reports.add(report);
             }
         } catch (SQLException e) {
@@ -422,6 +486,34 @@ public class get_from_db {
         return reports;
     }
 
+    public List<Report_db> getAllReportsById(String systemId) throws IOException {
+        List<Report_db> reports = new ArrayList<>();
 
+        Request request = new Request.Builder().url(baseUrl + "/report/get-all-by-id/" + systemId).build();
 
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected response code: " + response);
+            }
+
+            String responseBody = response.body().string();
+            JSONArray jsonArray = new JSONArray(responseBody);
+
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonObject = jsonArray.getJSONObject(i);
+
+                int id = jsonObject.getInt("id");
+                int systemLoad = jsonObject.getInt("systemLoad");
+                int batteryInfo = jsonObject.getInt("batteryInfo");
+                int cpuInfo = jsonObject.getInt("cpuInfo");
+                int diskInfo = jsonObject.getInt("diskInfo");
+                int systemInfo = jsonObject.getInt("systemInfo");
+
+                Report_db report = new Report_db(systemLoad, batteryInfo, cpuInfo, diskInfo, systemInfo, systemId);
+                reports.add(report);
+            }
+        }
+        return reports;
+
+    }
 }

@@ -177,7 +177,7 @@ public class add_to_db {
 
         try (Connection connection = DbHandler.openConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(
-                     "INSERT INTO report (system_load_id, battery_info_id, cpu_info_id, disk_info_id, system_info_id) VALUES (?, ?, ?, ?, ?)",
+                     "INSERT INTO report (system_load_id, battery_info_id, cpu_info_id, disk_info_id, system_info_id, system_id) VALUES (?, ?, ?, ?, ?, ?)",
                      Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setInt(1, report_db.getSystemLoadId());
@@ -185,6 +185,7 @@ public class add_to_db {
             preparedStatement.setInt(3, report_db.getCpuInfoId());
             preparedStatement.setInt(4, report_db.getDiskInfoId());
             preparedStatement.setInt(5, report_db.getSystemInfoId());
+            preparedStatement.setString(6, report_db.getSystemId());
 
             preparedStatement.executeUpdate();
 

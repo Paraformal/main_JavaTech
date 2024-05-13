@@ -33,7 +33,6 @@ public class HelloController extends Application {
         serverBatteryMain = this;
         this.primaryStage = primaryStage;
 
-        // Setup the primary stage
         primaryStage.getIcons().add(new Image(getClass().getResourceAsStream("/com/example/main_s2024/icon.png")));
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/main_s2024/sample.fxml"));
 
@@ -56,7 +55,6 @@ public class HelloController extends Application {
             this.primaryStage.setOnCloseRequest(event -> shutdownApplication());
 
 
-            // Optionally set title with IP address
             setTitleWithIpAddress();
 
         } catch (IOException e) {

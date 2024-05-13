@@ -17,6 +17,7 @@
                 <TableColumn fx:id="diskInfoIdColumn" prefWidth="100.0" text="Disk Info ID" />
                 <TableColumn fx:id="systemInfoIdColumn" prefWidth="100.0" text="System Info ID" />
                 <TableColumn fx:id="timeStampColumn" prefWidth="100.0" text="Timestamp" />
+            <TableColumn fx:id="systemIdColumn" prefWidth="100.0" text="SystemId" />
             </columns>
         </TableView>
     </children>

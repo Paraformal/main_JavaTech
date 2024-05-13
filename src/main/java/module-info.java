@@ -10,6 +10,8 @@ module com.example.main_s2024 {
     requires sigar;
     requires org.json;
     requires com.sun.jna;
+    requires okhttp3;
+    requires com.google.gson;
 
     opens com.example.main_s2024 to javafx.fxml;
     exports com.example.main_s2024;
